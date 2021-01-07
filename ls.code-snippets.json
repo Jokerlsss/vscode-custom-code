@@ -1,0 +1,374 @@
+{
+  生成vxe模态窗 {
+    prefix vm,
+    body [
+      template,
+        vxe-modal ref='modal' v-model='formVisible' title='' width='500px' height='500px' style='top 100px' @show='showModal'vxe-modal,
+      template,
+      script,
+      export default {,
+        data () {,
+          return {,
+            formVisible false,
+          },
+        },,
+        methods {,
+          showModal () {,
+      $1,
+          },
+        },
+      },
+      script,
+      style lang='less' scoped,
+      style
+    ],
+    description 打印less的style代码片段
+  },
+   hg
+  生成axios请求 {
+    prefix hg,
+    body [
+      const {datares} = await this.$http.get('$1'),
+      if(res.isSuccess){,
+      console.log(res),
+      }
+    ],
+    description 生成axios请求
+  },
+   rt
+  生成必读检验 {
+    prefix rt,
+    body [
+      {,
+      requiredtrue,,
+      message'请输入$1',,
+      trigger'change',
+      }
+    ],
+    description 生成必读检验
+  },
+   cl
+  打印 {
+    prefix cl,
+    body [
+      console.log('$1',)
+    ],
+    description 打印
+  },
+   htmlsp
+  SingleFormToolBar审批方法 {
+    prefix htmlsp,
+    body [
+      @beforSubmit='beforSubmit',
+      @afterAgree='afterAgree',
+      @beforCancel='beforCancel',
+      @afterCancel='afterCancel'
+    ]
+  },
+   methodsp
+  审批方法生成 {
+    prefix methodsp,
+    body [
+             提交审批前,
+            async beforSubmit () {,
+              const that = this,
+              const { data res } = await this.$http.put('$1', {,
+                id that.id,,
+                effectCondition that.Authority.alEffectCondition,,
+                empower that.Authority.empower,
+              }),
+              if (res.isSuccess) {,
+                return true,
+              } else {,
+                this.$message.error(res.errorMessage),
+              },
+            },,
+            async afterAgree () {,
+              const that = this,
+              const { data res } = await this.$http.put('', {,
+                id that.id,,
+                effectCondition that.Authority.alEffectCondition,,
+                empower that.Authority.empower,
+              }),
+              res.isSuccess && this.BindText(),
+            },,
+            async beforCancel () {,
+              const that = this,
+              const { data res } = await this.$http.put('', {,
+                id that.id,,
+                effectCondition that.Authority.alEffectCondition,,
+                empower that.Authority.empower,
+              }),
+              if (res.isSuccess) {,
+                return true,
+              } else {,
+                this.$message.error(res.errorMessage),
+              },
+            },,
+            async afterCancel () {,
+              const that = this,
+              const { data res } = await this.$http.put('', {,
+                id that.id,,
+                effectCondition that.Authority.alEffectCondition,,
+                empower that.Authority.empower,
+              }),
+              res.isSuccess && this.BindText(),
+            },,
+    ]
+  },
+   datamenu
+  verticalMenu {
+    prefix datavmenu,
+    body [
+      this.verticalMenu = [,
+      {,
+      name '$1',,
+      edit this.SingleToolBar.save.Enable,,
+      event 'handle',
+      },
+      ]
+    ]
+  },
+   methodcb
+  BindCombobox绑定下拉框方法 {
+    prefix methodcb,
+    body [
+      combobox {,
+      bWorkShopName [],
+      },,
+      that.BindComboBox(),
+      async BindComboBox () {,
+      this.combobox.bWorkShopName = [],
+      const { data res } = await this.$http.get('MESMESChipToMoldselect-item'),
+      if (res.isSuccess) {,
+      for (let item of res.data) {,
+      this.combobox.bWorkShopName.push(item),
+      },
+      },
+      }
+    ]
+  },
+   htmlcb
+  el-select下拉选择框 {
+    prefix htmlcb,
+    body [
+      el-select,
+      clearable,
+      v-model='form.bWorkShopName',
+      placeholder='messageConfig.selectPlaceholder',
+      disabled='SingleToolBar && !SingleToolBar.save.Enable',
+      ,
+      el-option,
+      index='item + ''',
+      v-for='item in combobox.bWorkShopName',
+      key='item.name',
+      label='item.name',
+      value='item.value',
+      el-option,
+      el-select,
+      template slot='error' slot-scope='slot',
+      div class='error-icon',
+      el-tooltip content='slot.error' placement='bottom' effect='light',
+      i class='el-icon-warning'i,
+      el-tooltip,
+      div,
+      template
+    ]
+  },
+   htmlmc
+  menu-click {
+    prefix htmlmc,
+    body [
+      @menu-click='contextMenuClickEvent',
+      menu-config='{ body { options bodyMenus }, visibleMethod }'
+    ]
+  },
+  bodyMenus结构 {
+    prefix databm,
+    body [
+       table快捷键
+      bodyMenus [[]],
+    ]
+  },
+   methodbm
+  右键菜单 {
+    prefix methodbodymenu,
+    body [
+       右键打开菜单,
+      contextMenuClickEvent ({ menu }) {,
+      const areas = this.$refs.xTable.getCellAreas(),
+      areas.forEach(a = {,
+      for (let row of a.rows) {,
+      for (let column of a.cols) {,
+      if (column.property === menu.code) {,
+      row[column.property] = menu.name,
+      },
+      },
+      },
+      }),
+      },,
+       快捷键,
+      visibleMethod ({ type, options, column }) {,
+      options.forEach(list = {,
+      list.forEach(item = {,
+      item.disabled = !this.SingleToolBar.save.Enable,
+      }),
+      }),
+      return true,
+      },
+    ]
+  },
+   htmlseq
+  序号列错误提示 {
+    prefix htmlseq,
+    body [
+      vxe-table-column type='seq' width='40',
+      template v-slot='{ row }',
+      el-tooltip,
+      v-if='row.ifRepeat',
+      class='tooltipItem',
+      effect='light',
+      content='row.repeatText',
+      placement='right',
+      ,
+      span{{ $refs.xTable.getVTRowIndex(row) + 1 }}span,
+      el-tooltip,
+      span v-else{{ $refs.xTable.getVTRowIndex(row) + 1 }}span,
+      template,
+      vxe-table-column
+    ]
+  },
+   htmlep
+  员工选择框 {
+    prefix htmlep,
+    body [
+      el-input,
+      v-model='form.jianYanYuan',
+      autocomplete='off',
+      placeholder='messageConfig.selectPlaceholder',
+      disabled='SingleToolBar && !SingleToolBar.save.Enable',
+      clearable,
+      v-readonly,
+      ,
+      i slot='suffix' class='el-icon-search' @click='handleOpenEmployee()'i,
+      el-input,
+      !-- 员工选择框 --,
+      HREmployeeSelect ref='HREmployeeSelect' @sureSelectBack='sureBackEmployee'HREmployeeSelect
+    ]
+  },
+   methodep
+  员工选择框返回值 {
+    prefix methodep,
+    body [
+       打开取样人选择框
+      handleOpenEmployee (value) {,
+      if (this.SingleToolBar && this.SingleToolBar.save.Enable) {,
+      this.EmployeeType = value,
+      this.$refs.HREmployeeSelect.formVisible = true,
+      },
+      },,
+       员工选择框选择框返回数据,
+      async sureBackEmployee (selectRecords) {,
+      let that = this,
+      if (selectRecords.length  0) {,
+      let tableData = this.$refs.xTable.getTableData().fullData,
+      for (let item of selectRecords) {,
+      const option = tableData.filter(i = {,
+      return i.hrEmployeeID === item.id,
+      }),
+      if (option.length === 0) {,
+      let record = {,
+      hrEmployeeID item.id,,
+      eName item.name,,
+      gangWei item.gangWei,
+      },
+      this.$refs.xTable.insertAt(record, -1),
+      },
+      },
+      },
+      }
+    ]
+  },
+   methodcheck
+  验证最大小值区间 {
+    prefix methodcheck,
+    body [
+       验证最小值1,
+      checkMinValue1 ({ cellValue, row }) {,
+      return new Promise((resolve, reject) = {,
+      let min = cellValue  parseFloat(cellValue)  0,
+      let max = row.maxValue1  parseFloat(row.maxValue1)  0,
+      if (min  max) {,
+      reject(new Error('请输入正确的区间')),
+      } else {,
+      resolve(),
+      },
+      }),
+      },,
+       验证最大值1,
+      checkMaxValue1 ({ cellValue, row }) {,
+      return new Promise((resolve, reject) = {,
+      let min = row.minValue1  parseFloat(row.minValue1)  0,
+      let max = cellValue  parseFloat(cellValue)  0,
+      if (min  max) {,
+      reject(new Error('请输入正确的区间')),
+      } else {,
+      resolve(),
+      },
+      }),
+      }
+    ]
+  },
+   datapush
+  下推按钮 {
+    prefix datapush,
+    body [
+      this.horizontalMenu = [,
+      {,
+      name '下推框架合同(' + this.form.pushFrameCompactState + ')',,
+      edit that.Authority.edit && (this.form.pushFrameCompactState === '开启') && !that.SingleToolBar.edit.Enable,,
+      icon that.iconConfig.push,,
+      event 'handlePushFrameCompact',
+      }
+    ]
+  },
+   methodpush
+  下推方法 {
+    prefix methodpush,
+    body [
+       下推
+      async handlePushFrameCompact () {,
+      let that = this,
+      const { data res } = await this.$http.put('SaleSBidOpenRecordpushSFrameCompact' + this.id),
+      if (res.isSuccess) {,
+      that.OpenPush('SFrameCompact', res.data),
+      that.BindText(),
+      } else {,
+      this.$message.error(res.errorMessage),
+      }
+    ]
+  },
+   methodcm
+  cell-menu打开日期框 {
+    prefix methodcm,
+    body [
+       右键打开日期,
+      cellContextMenuEvent ({ type, row, rowIndex, column, columnIndex, cell }, event) {,
+      if (this.SingleToolBar.save.Enable) {,
+      this.areas = [],
+      this.areas = this.$refs.xTable.getCellAreas(),
+      if (column.property === 'deliverDate') {,
+      this.$refs.DateTimeInput.formVisible = true,
+      },
+      },
+      }
+    ]
+  },
+   htmlcm
+  cell-menu HTML {
+    prefix htmlcm,
+    body [
+      @cell-menu='cellContextMenuEvent',
+    ]
+  },
+}
